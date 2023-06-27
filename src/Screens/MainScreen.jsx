@@ -16,6 +16,13 @@ const MainScreen = ({ taskList }) => {
             }
         ]);
     }
+    const renderItemTask = ({ item }) => {
+        return (
+            <View style={styles.task} key={item.id}>
+                <Text style={styles.taskText}>{item.task}</Text>
+            </View>
+        )
+    }
     return (
         <View style={styles.container}>
             <View style={styles.view1}>
@@ -36,13 +43,7 @@ const MainScreen = ({ taskList }) => {
                 <FlatList
                     data={list}
                     keyExtractor={item => item.id}
-                    renderItem={({ item }) => {
-                        return (
-                            <View style={styles.task} key={item.id}>
-                                <Text style={styles.taskText}>{item.task}</Text>
-                            </View>
-                        )
-                    }}
+                    renderItem={renderItemTask}
                 ></FlatList>
                 {/* list.map(({ id, task, completed }) => (
 
@@ -105,7 +106,7 @@ const styles = StyleSheet.create({
         width: 350,
         backgroundColor: "azure",
         padding: 10,
-        marginBottom:15,
+        marginBottom: 15,
         backgroundColor: "mediumpurple",
         borderRadius: 6,
         borderColor: "#000",
