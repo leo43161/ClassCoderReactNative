@@ -1,10 +1,21 @@
 import { StyleSheet, Text, View, TextInput, Pressable, TouchableOpacity, FlatList, Modal } from 'react-native'
 import React, { useState } from 'react'
 
+const renderItemTask = ({ item, onPressTask }) => {
+    return (
+        <Pressable onPress={() => onPressTask(item)}>
+            <View style={styles.task} key={item.id}>
+                <Text style={styles.taskText}>{item.task}</Text>
+            </View>
+        </Pressable>
+    )
+}
+
 const MainScreen = ({ taskList }) => {
     const [list, setList] = useState(taskList);
     const [input, setInput] = useState("");
     const [modalVisible, setModalVisible] = useState(false);
+    const [taskActive, setTaskActive] = useState({});
 
     const onAddTask = () => {
         console.log("se agrego una task");
@@ -17,13 +28,12 @@ const MainScreen = ({ taskList }) => {
             }
         ]);
     }
-    const renderItemTask = ({ item }) => {
-        return (
-            <View style={styles.task} key={item.id}>
-                <Text style={styles.taskText}>{item.task}</Text>
-            </View>
-        )
+    const onPressTask = (task) => {
+        setTaskActive(task);
+        setModalVisible(!modalVisible);
     }
+
+
     return (
         <View style={styles.container}>
             <View style={styles.view1}>
@@ -41,36 +51,41 @@ const MainScreen = ({ taskList }) => {
                 </TouchableOpacity>
             </View>
             <View style={styles.view2}>
+
                 <FlatList
                     data={list}
                     keyExtractor={item => item.id}
-                    renderItem={renderItemTask}
+                    renderItem={({ item }) => renderItemTask({ item, onPressTask })}
                 ></FlatList>
-                <Pressable
-                    style={[styles.button, styles.buttonOpen]}
-                    onPress={() => setModalVisible(true)}>
-                    <Text style={styles.textStyle}>Show Modal</Text>
-                </Pressable>
-                {/* list.map(({ id, task, completed }) => (
-
-                )) */}
             </View>
             <Modal
                 animationType="slide"
                 transparent={true}
                 visible={modalVisible}
                 onRequestClose={() => {
-                    Alert.alert('Modal has been closed.');
                     setModalVisible(!modalVisible);
                 }}>
                 <View style={styles.centeredView}>
                     <View style={styles.modalView}>
-                        <Text style={styles.modalText}>Hello World!</Text>
-                        <Pressable
-                            style={[styles.button, styles.buttonClose]}
-                            onPress={() => setModalVisible(!modalVisible)}>
-                            <Text style={styles.textStyle}>Hide Modal</Text>
-                        </Pressable>
+                        <Text style={styles.modalText}>{taskActive.task}</Text>
+                        <View style={styles.buttonContainer}>
+                            <Pressable
+                                style={[styles.button, styles.buttonDone]}
+                                onPress={() => setModalVisible(!modalVisible)}>
+                                <Text style={styles.textStyle}>Done</Text>
+                            </Pressable>
+                            <Pressable
+                                style={[styles.button, styles.buttonYet]}
+                                onPress={() => setModalVisible(!modalVisible)}>
+                                <Text style={styles.textStyle}>Not yet</Text>
+                            </Pressable>
+                            <Pressable
+                                style={[styles.button, styles.buttonCancel]}
+                                onPress={() => setModalVisible(!modalVisible)}>
+                                <Text style={styles.textStyle}>Cancel</Text>
+                            </Pressable>
+                        </View>
+
                     </View>
                 </View>
             </Modal>
@@ -163,6 +178,10 @@ const styles = StyleSheet.create({
         shadowRadius: 4,
         elevation: 5,
     },
+    buttonContainer: {
+        flexDirection: "row",
+        alignItems: "center"
+    },
     button: {
         borderRadius: 20,
         padding: 10,
@@ -171,8 +190,14 @@ const styles = StyleSheet.create({
     buttonOpen: {
         backgroundColor: '#F194FF',
     },
-    buttonClose: {
-        backgroundColor: '#2196F3',
+    buttonCancel: {
+        backgroundColor: 'red',
+    },
+    buttonDone: {
+        backgroundColor: 'green',
+    },
+    buttonYet: {
+        backgroundColor: 'blue',
     },
     textStyle: {
         color: 'white',
